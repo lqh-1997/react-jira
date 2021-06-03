@@ -1,5 +1,5 @@
-import { ProjectListScreen } from "screens/project-list/index";
-import "./App.css";
+import { ProjectListScreen } from 'screens/project-list/index';
+import './App.css';
 
 function App() {
   return (
