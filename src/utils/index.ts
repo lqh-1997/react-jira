@@ -31,7 +31,7 @@ export const useMount = (callback: () => void) => {
   }, []);
 };
 
-export const useDebounce = (value: any, delay?: number) => {
+export const useDebounce = <T>(value: T, delay?: number): T => {
   const [debounceValue, setDebounceValue] = useState(value);
 
   useEffect(() => {
@@ -42,4 +42,22 @@ export const useDebounce = (value: any, delay?: number) => {
   }, [value, delay]);
 
   return debounceValue;
+};
+
+export const useArray = <T>(arr: T[]) => {
+  const [result, setResult] = useState(arr);
+
+  const add = function (item: T) {
+    setResult([...result, item]);
+  };
+  const clear = function () {
+    setResult([]);
+  };
+  const removeIndex = function (index: number) {
+    const copy: T[] = [...result];
+    copy.splice(index, 1);
+    setResult(copy);
+  };
+
+  return { value: result, clear, removeIndex, add };
 };
