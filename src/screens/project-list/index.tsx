@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { SearchPanel } from './search-panel';
 import { List } from './list';
 import { cleanObject, useDebounce, useMount } from 'utils';
-import qs from 'qs';
+import { useHttp } from 'utils/http';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -18,21 +18,14 @@ export const ProjectListScreen = () => {
   // eslint-disable-next-line no-unused-vars
   const [users, setUsers] = useState([]);
   const [list, setList] = useState([]);
+  const client = useHttp();
 
   useEffect(() => {
-    fetch(`${apiUrl}/projects?${qs.stringify(cleanObject(debouncedParam))}`).then(async (res) => {
-      if (res.ok) {
-        setList(await res.json());
-      }
-    });
+    client('projects', { data: cleanObject(debouncedParam) }).then(setList);
   }, [debouncedParam]);
 
   useMount(() => {
-    fetch(`${apiUrl}/users`).then(async (res) => {
-      if (res.ok) {
-        setUsers(await res.json());
-      }
-    });
+    client('users').then(setUsers);
   });
 
   return (
