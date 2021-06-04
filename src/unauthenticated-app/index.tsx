@@ -1,3 +1,4 @@
+//未登录时使用的文件 可以在这里切换登录或者是注册
 import { useState } from 'react';
 import { LoginScreen } from './login';
 import { RegisterScreen } from './register';

@@ -35,7 +35,7 @@ AuthContext.displayName = 'AuthContext';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // login 和 register写法是相同的 消参（point free）
+  // 以下login 和 register为两种相同的写法 消参（point free）
   const login = (form: AuthForm) => auth.login(form).then(setUser);
   const register = (form: AuthForm) => auth.register(form).then((user) => setUser(user));
   const logout = () => auth.logout().then(() => setUser(null));
