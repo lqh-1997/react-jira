@@ -1,4 +1,6 @@
+// import { jsx } from '@emotion/react';
 import { Input, Select } from 'antd';
+import { Form } from 'antd';
 
 export interface User {
   id: string;
@@ -20,10 +22,12 @@ interface SearchPanelProps {
 
 export const SearchPanel = ({ param, setParam, users }: SearchPanelProps) => {
   return (
-    <form>
-      <div>
+    // 要使用emotion行内样式 需要在头部加上注释 和 引入
+    <Form layout={'inline'} style={{ marginBottom: '2rem' }}>
+      <Form.Item>
         {/* 输入框 */}
         <Input
+          placeholder="项目名"
           type="text"
           value={param.name}
           onChange={(evt) =>
@@ -33,6 +37,8 @@ export const SearchPanel = ({ param, setParam, users }: SearchPanelProps) => {
             })
           }
         />
+      </Form.Item>
+      <Form.Item>
         {/* 下拉选择框 */}
         <Select
           value={param.personId}
@@ -52,7 +58,7 @@ export const SearchPanel = ({ param, setParam, users }: SearchPanelProps) => {
             );
           })}
         </Select>
-      </div>
-    </form>
+      </Form.Item>
+    </Form>
   );
 };
