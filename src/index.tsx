@@ -3,14 +3,15 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 // antd.less在组件后面引入可以保证修改antd组件样式的同时也修改组件中使用的antd的样式
-import { loadDevTools } from 'jira-dev-tool';
+import { DevTools, loadServer } from 'jira-dev-tool';
 import 'antd/dist/antd.less';
 import { AppProviders } from 'context/index';
 
-loadDevTools(() => {
+loadServer(() => {
   ReactDOM.render(
     <React.StrictMode>
       <AppProviders>
+        <DevTools />
         <App />
       </AppProviders>
     </React.StrictMode>,

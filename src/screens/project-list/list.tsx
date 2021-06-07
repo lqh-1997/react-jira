@@ -35,15 +35,17 @@ export const List = ({ list, users }: ListProps) => {
           render(value, project) {
             return <span>{users.find((user) => user.id === project.personId)?.name}</span>;
           },
+          dataIndex: 'personId',
         },
         {
           title: '创建时间',
           render(value, project) {
             return <span>{project.created ? dayjs(project.created).format('YYYY-MM-DD') : '--'}</span>;
           },
+          dataIndex: 'created',
         },
       ]}
-      dataSource={list}
+      dataSource={list.map((project) => Object.assign({ key: project.id }, project))}
     ></Table>
   );
 };

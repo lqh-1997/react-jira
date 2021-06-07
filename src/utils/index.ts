@@ -7,17 +7,22 @@ import { useEffect, useState } from 'react';
  */
 export const isFalsy = (value: unknown) => (value === 0 ? false : !value);
 
+export const isVoid = (value: unknown) => value === null || value === undefined || value === '';
+
+// 这里不能给object赋值给object类型，因为object类型包含范围很广
+// 包括函数 各种对象实例等
+// 所以我们要特别将object的类型赋值为包含键值对的object
+// 就如下所示 {[key: string]: unknow}
 /**
  * 将函数中为空的对象删掉
- * @param {*} object
+ * @param object
+ * @returns
  */
-export const cleanObject = (object: object) => {
+export const cleanObject = (object: { [key: string]: unknown }) => {
   const result = Object.assign({}, object);
   Object.keys(object).forEach((key) => {
-    // @ts-ignore
     const value = object[key];
-    if (isFalsy(value)) {
-      // @ts-ignore
+    if (isVoid(value)) {
       delete result[key];
     }
   });
@@ -27,6 +32,7 @@ export const cleanObject = (object: object) => {
 export const useMount = (callback: () => void) => {
   useEffect(() => {
     callback();
+    // TODO 依赖加上callback会造成无限循环 和useCallback 和 useMemo 有关系
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
