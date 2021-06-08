@@ -22,7 +22,7 @@ export const AuthenticatedApp = () => {
             overlay={
               <Menu>
                 <Menu.Item key={'logout'}>
-                  <span onClick={logout}>登出</span>
+                  <span onClick={() => logout()}>登出</span>
                 </Menu.Item>
               </Menu>
             }
