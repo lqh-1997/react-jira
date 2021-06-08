@@ -18,6 +18,7 @@ export const LoginScreen = ({ onError }: { onError: (error: Error) => void }) =>
     try {
       await run(login(values));
     } catch (err) {
+      console.log(err);
       onError(err);
     }
   };

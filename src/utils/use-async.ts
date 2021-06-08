@@ -24,7 +24,7 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
 
   const config = {
     ...defaultConfig,
-    initialConfig,
+    ...initialConfig,
   };
 
   const setData = (data: D) =>
