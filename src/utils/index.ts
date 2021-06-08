@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * 是否为假值 null undefined '' NaN 0n false
@@ -66,4 +66,21 @@ export const useArray = <T>(arr: T[]) => {
   };
 
   return { value: result, clear, removeIndex, add };
+};
+
+export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) => {
+  // useRef能够保持值不变
+  const oldTitle = useRef(document.title).current;
+
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  useEffect(() => {
+    return () => {
+      if (!keepOnUnmount) {
+        document.title = oldTitle;
+      }
+    };
+  }, [keepOnUnmount, oldTitle]);
 };
