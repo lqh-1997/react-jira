@@ -6,13 +6,11 @@ import styled from '@emotion/styled';
 import { useProjects } from 'utils/project';
 import { useUsers } from 'utils/user';
 import { Typography } from 'antd';
+import { useUrlQueryParam } from 'utils/url';
 
 export const ProjectListScreen = () => {
-  // 这个是当前选择的人物信息
-  const [param, setParam] = useState({
-    name: '',
-    personId: '',
-  });
+  const [keys] = useState<('name' | 'personId')[]>(['name', 'personId']);
+  const [param, setParam] = useUrlQueryParam(keys);
 
   const debouncedParam = useDebounce(param, 200);
   const { isLoading, error, data: list } = useProjects(debouncedParam);
@@ -29,6 +27,9 @@ export const ProjectListScreen = () => {
     </Container>
   );
 };
+
+// 用来查看该组件内部什么地方造成了无限渲染等错误
+// ProjectListScreen.whyDidYouRender = true;
 
 const Container = styled.div`
   padding: 3.2rem;
