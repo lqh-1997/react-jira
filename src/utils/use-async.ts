@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMonutedRef } from 'utils';
 
 interface State<D> {
   error: Error | null;
@@ -17,10 +18,22 @@ const defaultConfig = {
 };
 
 export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defaultConfig) => {
+  // useState 传入的参数只会在初始渲染中起作用，可以通过一个函数的返回值获得该参数
+  // 该功能一般用来防止通过复杂运算获取state所导致每次渲染都要大量运算获取state
+  // 所以useState中传入的如果为函数 则会第一次就被调用
+  // https://react.docschina.org/docs/hooks-reference.html#lazy-initial-state
   const [state, setState] = useState({
     ...defaultInitialState,
     ...initialState,
   });
+
+  // 如果要给state设置函数 就用函数返回函数的形式
+  // 还可以通过useRef的方式
+  const [retry, setRetry] = useState(() => {
+    return () => {};
+  });
+
+  const mountedRef = useMonutedRef();
 
   const config = {
     ...defaultConfig,
@@ -41,14 +54,27 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
       data: null,
     });
 
-  const run = (promise: Promise<D>) => {
+  // 因为run传进来的promise已经是resolve了的实例，所以要重新传入一个promise方法
+  const run = (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
     if (!promise || !promise.then) {
       throw new Error('请传入Promise类型数据');
     }
+
+    // 同理 如果要给state设置一个函数 就使用返回一个函数的形式
+    // 将retry原封不动给retry
+    setRetry(() => () => {
+      if (runConfig?.retry) {
+        run(runConfig?.retry(), runConfig);
+      }
+    });
+
     setState({ ...state, stat: 'loading' });
     return promise
       .then((data) => {
-        setData(data);
+        // 防止组件已卸载却仍旧赋值
+        if (mountedRef.current) {
+          setData(data);
+        }
         return data;
       })
       .catch((error) => {
@@ -70,5 +96,6 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
     setData,
     setError,
     ...state,
+    retry,
   };
 };

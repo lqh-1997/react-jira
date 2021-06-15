@@ -2,6 +2,8 @@ import { User } from './search-panel';
 import { Table, TableProps } from 'antd';
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
+import { Pin } from 'components/pin';
+import { useEditProject } from 'utils/project';
 
 export interface Project {
   id: number;
@@ -14,14 +16,26 @@ export interface Project {
 
 interface ListProps extends TableProps<Project> {
   users: User[];
+  refresh?: () => void;
 }
 
 export const List = ({ users, ...props }: ListProps) => {
+  const { mutate } = useEditProject();
+  // 函数柯里化 pin作为选择的参数是后传的 id作为一开始就知道的参数将其分开
+  // 然后下面调用的部分还使用了point free的手法
+  const pinProject = (id: number) => (pin: boolean) => mutate({ id, pin }).then(() => props.refresh?.());
   return (
     <Table
       rowKey={'id'}
       pagination={false}
       columns={[
+        {
+          title: <Pin checked={true} disabled={true}></Pin>,
+          render(value, project) {
+            // pin => pinProject(project.id)(pin)
+            return <Pin checked={project.pin} onCheckedChange={pinProject(project.id)}></Pin>;
+          },
+        },
         {
           title: '名称',
           sorter: (a, b) => a.name.localeCompare(b.name),

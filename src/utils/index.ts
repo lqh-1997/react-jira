@@ -70,6 +70,7 @@ export const useArray = <T>(arr: T[]) => {
 
 export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) => {
   // useRef能够保持值不变
+  // useRef内部值改变的时候不会触发组件的重新渲染
   const oldTitle = useRef(document.title).current;
 
   useEffect(() => {
@@ -86,3 +87,20 @@ export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) =
 };
 
 export const resetRoutes = () => (window.location.href = window.location.origin);
+
+/**
+ * 返回组件的挂载状态，如果还没挂在或者已经卸载，返回false
+ * 反之返回true
+ */
+export const useMonutedRef = () => {
+  const mountedRef = useRef(false);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  });
+
+  return mountedRef;
+};
