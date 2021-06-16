@@ -26,7 +26,6 @@ export const AuthenticatedApp = () => {
 };
 
 const PageHeader = () => {
-  const { logout, user } = useAuth();
   return (
     <Header between={true}>
       <HeaderLeft gap={true}>
@@ -38,19 +37,28 @@ const PageHeader = () => {
         <h2>用户</h2>
       </HeaderLeft>
       <HeaderRight>
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item key={'logout'}>
-                <span onClick={() => logout()}>登出</span>
-              </Menu.Item>
-            </Menu>
-          }
-        >
-          <Button type="text"> Hi, {user?.name} </Button>
-        </Dropdown>
+        <User></User>
       </HeaderRight>
     </Header>
+  );
+};
+
+// 暂时性死区 temporal dead zone
+// 会使该函数'变量提升(并不会赋值undefined 而是只要你不调用引用了该变量的方法就不会报错)'
+const User = () => {
+  const { logout, user } = useAuth();
+  return (
+    <Dropdown
+      overlay={
+        <Menu>
+          <Menu.Item key={'logout'}>
+            <span onClick={() => logout()}>登出</span>
+          </Menu.Item>
+        </Menu>
+      }
+    >
+      <Button type="text"> Hi, {user?.name} </Button>
+    </Dropdown>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Project } from 'screens/project-list/list';
 import { cleanObject } from 'utils';
 import { useHttp } from './http';
@@ -8,14 +8,14 @@ export const useProjects = (param?: Partial<Project>) => {
   const client = useHttp();
   const { run, ...result } = useAsync<Project[]>();
 
-  const fetchProjects = () => client('projects', { data: cleanObject(param || {}) });
+  const fetchProjects = useCallback(() => client('projects', { data: cleanObject(param || {}) }), [client, param]);
 
   useEffect(() => {
     run(fetchProjects(), {
       retry: fetchProjects,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [param]);
+    // run是一个非状态的非基本类型 不能将它放到依赖里 否则会带来无限循环的问题
+  }, [fetchProjects, param, run]);
 
   return result;
 };
