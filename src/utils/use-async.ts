@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { useMonutedRef } from 'utils';
+import { useCallback, useReducer, useState } from 'react';
+import { useMountedRef } from 'utils';
 
 interface State<D> {
   error: Error | null;
@@ -33,7 +33,7 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
     return () => {};
   });
 
-  const mountedRef = useMonutedRef();
+  const mountedRef = useMountedRef();
 
   const config = {
     ...defaultConfig,
@@ -95,6 +95,93 @@ export const useAsync = <D>(initialState?: State<D>, initialConfig?: typeof defa
         });
     },
     [config.throwOnError, mountedRef, setData, setError],
+  );
+
+  return {
+    isIdle: state.stat === 'idle',
+    isLoading: state.stat === 'loading',
+    isError: state.stat === 'error',
+    isSuccess: state.stat === 'success',
+    run,
+    setData,
+    setError,
+    ...state,
+    retry,
+  };
+};
+
+// 以下为使用useReducer实现的useAsync
+const useSafeDispatch = <T>(dispatch: (...args: T[]) => void) => {
+  const mountedRef = useMountedRef();
+  return useCallback((...args: T[]) => (mountedRef.current ? dispatch(...args) : void 0), [dispatch, mountedRef]);
+};
+
+export const useAsync2 = <D>(initialState?: State<D>, initialConfig?: typeof defaultConfig) => {
+  const [state, dispatch] = useReducer((state: State<D>, action: Partial<State<D>>) => ({ ...state, ...action }), {
+    ...defaultInitialState,
+    ...initialState,
+  });
+
+  const config = {
+    ...defaultConfig,
+    ...initialConfig,
+  };
+
+  const safeDispatch = useSafeDispatch(dispatch);
+
+  const [retry, setRetry] = useState(() => () => {});
+
+  const setData = useCallback(
+    (data: D) =>
+      safeDispatch({
+        data,
+        stat: 'success',
+        error: null,
+      }),
+    [safeDispatch],
+  );
+
+  const setError = useCallback(
+    (error: Error) =>
+      safeDispatch({
+        error,
+        stat: 'error',
+        data: null,
+      }),
+    [safeDispatch],
+  );
+
+  // 因为run传进来的promise已经是resolve了的实例，所以要重新传入一个promise方法
+  const run = useCallback(
+    (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
+      if (!promise || !promise.then) {
+        throw new Error('请传入Promise类型数据');
+      }
+
+      // 同理 如果要给state设置一个函数 就使用返回一个函数的形式
+      // 将retry原封不动给retry
+      setRetry(() => () => {
+        if (runConfig?.retry) {
+          run(runConfig?.retry(), runConfig);
+        }
+      });
+
+      safeDispatch({ stat: 'loading' });
+      return promise
+        .then((data) => {
+          setData(data);
+          return data;
+        })
+        .catch((error) => {
+          // 需要主动抛出异常
+          setError(error);
+          if (config.throwOnError) {
+            return Promise.reject(error);
+          }
+          return error;
+        });
+    },
+    [config.throwOnError, safeDispatch, setData, setError],
   );
 
   return {

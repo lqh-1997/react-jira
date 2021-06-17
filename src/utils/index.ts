@@ -92,7 +92,7 @@ export const resetRoutes = () => (window.location.href = window.location.origin)
  * 返回组件的挂载状态，如果还没挂在或者已经卸载，返回false
  * 反之返回true
  */
-export const useMonutedRef = () => {
+export const useMountedRef = () => {
   const mountedRef = useRef(false);
 
   useEffect(() => {
