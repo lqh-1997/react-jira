@@ -5,31 +5,28 @@ import styled from '@emotion/styled';
 import { useProjects } from 'utils/project';
 import { useUsers } from 'utils/user';
 import { Typography } from 'antd';
-import { useProjectsSearchParams } from './util';
-import { Row } from 'components/lib';
+import { useProjectModal, useProjectsSearchParams } from './util';
+import { ButtonNoPadding, Row } from 'components/lib';
 
-export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
+export const ProjectListScreen = () => {
   useDocumentTitle('项目列表', false);
 
   const [param, setParam] = useProjectsSearchParams();
   const { isLoading, error, data: list, retry } = useProjects(useDebounce(param, 200));
   const { data: users } = useUsers();
+  const { open } = useProjectModal();
 
   return (
     <Container>
       <Row between={true}>
         <h1>项目列表</h1>
-        {props.projectButton}
+        <ButtonNoPadding onClick={open} type={'link'}>
+          创建项目
+        </ButtonNoPadding>
       </Row>
       <SearchPanel param={param} setParam={setParam} users={users || []}></SearchPanel>
       {error ? <Typography.Text type={'danger'}>{error.message}</Typography.Text> : null}
-      <List
-        projectButton={props.projectButton}
-        refresh={retry}
-        loading={isLoading}
-        dataSource={list || []}
-        users={users || []}
-      ></List>
+      <List refresh={retry} loading={isLoading} dataSource={list || []} users={users || []}></List>
     </Container>
   );
 };

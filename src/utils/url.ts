@@ -2,6 +2,7 @@ import { cleanObject } from './index';
 import { useMemo } from 'react';
 import { URLSearchParamsInit, useSearchParams } from 'react-router-dom';
 
+// 传入url中param的键值数组 返回[一个对象包含他们的键值对, 一个set函数]
 export const useUrlQueryParam = <K extends string>(keys: K[]) => {
   const [searchParams, setSearchParam] = useSearchParams();
   return [

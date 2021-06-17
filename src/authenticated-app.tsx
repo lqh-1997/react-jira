@@ -8,56 +8,36 @@ import { ReactComponent as SoftwareLogo } from 'assets/software-logo.svg';
 import { Button, Dropdown, Menu } from 'antd';
 import { Navigate, Route, Routes } from 'react-router';
 import { resetRoutes } from 'utils';
-import { useState } from 'react';
 import { ProjectModal } from 'screens/project-list/project-modal';
 import { ProjectPopover } from 'components/project-popover';
 
 // 一个状态要传入多层的子组件被称为 prop drilling
 
 export const AuthenticatedApp = () => {
-  const [projectModalOpen, setProjectModalOpen] = useState(false);
-
   return (
     <Container>
-      <PageHeader
-        projectButton={
-          <ButtonNoPadding onClick={() => setProjectModalOpen(true)} type={'link'}>
-            创建项目
-          </ButtonNoPadding>
-        }
-      />
+      <PageHeader />
       <Main>
         {/* <ProjectListScreen /> */}
         <Routes>
-          <Route
-            path={'/projects'}
-            element={
-              <ProjectListScreen
-                projectButton={
-                  <ButtonNoPadding onClick={() => setProjectModalOpen(true)} type={'link'}>
-                    创建项目
-                  </ButtonNoPadding>
-                }
-              />
-            }
-          ></Route>
+          <Route path={'/projects'} element={<ProjectListScreen />}></Route>
           <Route path={'/projects/:projectId/*'} element={<ProjectScreen />}></Route>
           <Navigate to={'/projects'}></Navigate>
         </Routes>
       </Main>
-      <ProjectModal projectModalOpen={projectModalOpen} onClose={() => setProjectModalOpen(false)}></ProjectModal>
+      <ProjectModal />
     </Container>
   );
 };
 
-const PageHeader = (props: { projectButton: JSX.Element }) => {
+const PageHeader = () => {
   return (
     <Header between={true}>
       <HeaderLeft gap={true}>
         <ButtonNoPadding type={'link'} onClick={resetRoutes}>
           <SoftwareLogo width={'18rem'} color={'rgb(38,132,255)'}></SoftwareLogo>
         </ButtonNoPadding>
-        <ProjectPopover {...props}></ProjectPopover>
+        <ProjectPopover></ProjectPopover>
         <span>用户</span>
       </HeaderLeft>
       <HeaderRight>
