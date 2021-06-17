@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { Pin } from 'components/pin';
 import { useEditProject } from 'utils/project';
 import { ButtonNoPadding } from 'components/lib';
+import { useDispatch } from 'react-redux';
+import { projectListActions } from './project-list.slice';
 
 export interface Project {
   id: number;
@@ -18,11 +20,11 @@ export interface Project {
 interface ListProps extends TableProps<Project> {
   users: User[];
   refresh?: () => void;
-  projectButton: JSX.Element;
 }
 
 export const List = ({ users, ...props }: ListProps) => {
   const { mutate } = useEditProject();
+  const dispatch = useDispatch();
   // 函数柯里化 pin作为选择的参数是后传的 id作为一开始就知道的参数将其分开
   // 然后下面调用的部分还使用了point free的手法
   const pinProject = (id: number) => (pin: boolean) => mutate({ id, pin }).then(() => props.refresh?.());
@@ -69,7 +71,11 @@ export const List = ({ users, ...props }: ListProps) => {
               <Dropdown
                 overlay={
                   <Menu>
-                    <Menu.Item key={'edit'}>{props.projectButton}</Menu.Item>
+                    <Menu.Item key={'edit'}>
+                      <ButtonNoPadding type={'link'} onClick={() => dispatch(projectListActions.openProjectModal())}>
+                        创建项目
+                      </ButtonNoPadding>
+                    </Menu.Item>
                   </Menu>
                 }
               >
