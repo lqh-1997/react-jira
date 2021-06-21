@@ -13,7 +13,8 @@ export const ProjectScreen = () => {
       <Routes>
         <Route path={'/kanban'} element={<KanbanScreen />} />
         <Route path={'/epic'} element={<EpicScreen />} />
-        <Navigate to={window.location.pathname + '/kanban'} />
+        {/* 添加replace用来router无法使用后退的问题 */}
+        <Navigate to={window.location.pathname + '/kanban'} replace={true} />
       </Routes>
     </div>
   );

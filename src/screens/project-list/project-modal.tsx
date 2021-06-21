@@ -16,19 +16,22 @@ export const ProjectModal = () => {
   const [form] = useForm();
   const onFinish = (values: any) => {
     mutateAsync({ ...editingProject, ...values }).then(() => {
-      form.resetFields();
-      close();
+      closeModel();
     });
   };
 
   const title = editingProject ? '编辑项目' : '创建项目';
+  const closeModel = () => {
+    form.resetFields();
+    close();
+  };
 
   useEffect(() => {
     form.setFieldsValue(editingProject);
   }, [editingProject, form]);
 
   return (
-    <Drawer forceRender={true} onClose={close} visible={projectModalOpen} width={'100%'}>
+    <Drawer forceRender={true} onClose={closeModel} visible={projectModalOpen} width={'100%'}>
       <Container>
         {isLoading ? (
           <Spin size={'large'} />

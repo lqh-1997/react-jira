@@ -13,7 +13,7 @@ export const useProjectsQueryKey = () => {
   return ['projects', param];
 };
 
-// 在url中保存状态 将该方法用作为全局状态管理器的功能
+// 在url中保存状态
 export const useProjectModal = () => {
   const [{ projectCreate }, setProjectCreate] = useUrlQueryParam(['projectCreate']);
   const [{ editingProjectId }, setEditingProjectId] = useUrlQueryParam(['editingProjectId']);

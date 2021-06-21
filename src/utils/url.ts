@@ -27,6 +27,7 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
   ] as const;
 };
 
+// 通用用来重置url的方法 因为上面那个方法返回的set只能改变自己传入的变量的value
 export const useSetUrlSearchParam = () => {
   const [searchParams, setSearchParam] = useSearchParams();
   return (params: { [key in string]: unknown }) => {
