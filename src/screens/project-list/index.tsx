@@ -4,15 +4,14 @@ import { useDebounce, useDocumentTitle } from 'utils';
 import styled from '@emotion/styled';
 import { useProjects } from 'utils/project';
 import { useUsers } from 'utils/user';
-import { Typography } from 'antd';
 import { useProjectModal, useProjectsSearchParams } from './util';
-import { ButtonNoPadding, Row } from 'components/lib';
+import { ButtonNoPadding, ErrorBox, Row } from 'components/lib';
 
 export const ProjectListScreen = () => {
   useDocumentTitle('项目列表', false);
 
   const [param, setParam] = useProjectsSearchParams();
-  const { isLoading, error, data: list, retry } = useProjects(useDebounce(param, 200));
+  const { isLoading, error, data: list } = useProjects(useDebounce(param, 200));
   const { data: users } = useUsers();
   const { open } = useProjectModal();
 
@@ -25,8 +24,8 @@ export const ProjectListScreen = () => {
         </ButtonNoPadding>
       </Row>
       <SearchPanel param={param} setParam={setParam} users={users || []}></SearchPanel>
-      {error ? <Typography.Text type={'danger'}>{error.message}</Typography.Text> : null}
-      <List refresh={retry} loading={isLoading} dataSource={list || []} users={users || []}></List>
+      <ErrorBox error={error}></ErrorBox>
+      <List loading={isLoading} dataSource={list || []} users={users || []}></List>
     </Container>
   );
 };

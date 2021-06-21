@@ -26,3 +26,14 @@ export const useUrlQueryParam = <K extends string>(keys: K[]) => {
     // 如果不加上 as const 类型会显示为{}[] 会认为数组中所有的项都为对象
   ] as const;
 };
+
+export const useSetUrlSearchParam = () => {
+  const [searchParams, setSearchParam] = useSearchParams();
+  return (params: { [key in string]: unknown }) => {
+    const o = cleanObject({
+      ...Object.fromEntries(searchParams),
+      ...params,
+    }) as URLSearchParamsInit;
+    return setSearchParam(o);
+  };
+};

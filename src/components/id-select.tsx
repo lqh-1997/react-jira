@@ -5,8 +5,8 @@ import { Raw } from 'types';
 type SelectProps = React.ComponentProps<typeof Select>;
 
 interface IdSelectProps extends Omit<SelectProps, 'value' | 'onChange' | 'defaultOptionName' | 'options'> {
-  value: Raw | null | undefined;
-  onChange: (value?: number) => void;
+  value?: Raw | null | undefined;
+  onChange?: (value?: number) => void;
   defaultOptionName: string;
   options?: { name: string; id: number }[];
 }
@@ -25,7 +25,7 @@ export const IdSelect = (props: IdSelectProps) => {
     <Select
       // 当后台还未返回的时候option.length为0 返回默认的为负责人
       value={options?.length ? toNumber(value) : 0}
-      onChange={(value) => onChange(toNumber(value) || undefined)}
+      onChange={(value) => onChange?.(toNumber(value) || undefined)}
       {...restProps}
     >
       {/* 默认的option值为0 */}
