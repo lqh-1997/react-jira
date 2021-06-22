@@ -27,5 +27,5 @@ export const useEditConfig = (queryKey: QueryKey) =>
     (target, old) => old?.map((item) => (item.id === target.id ? { ...item, ...target } : item)) || [],
   );
 export const useAddConfig = (queryKey: QueryKey) =>
-  // FIXME 没有传入id 会导致增加的时候key报错
+  // FIXME 在服务器还未返回成功之前,没有传入id 会导致增加的时候key报错(其实不建议这里使用乐观更新)
   useConfig(queryKey, (target, old) => (old ? [...old, target] : [target]));

@@ -23,7 +23,7 @@ export const useProjectModal = () => {
 
   const open = () => setProjectCreate({ projectCreate: true });
   const close = () => setUrlParams({ projectCreate: '', editingProjectId: '' });
-  // FIXME 不能够像下面这样写 因为react会合并setState操作 所以Id会无法set为null?
+  // 不能够像下面这样写 因为react会合并setState操作 所以Id会无法set为null
   // const close = () => {
   //   setEditingProjectId({ editingProjectId: undefined });
   //   setProjectCreate({ projectCreate: undefined });
