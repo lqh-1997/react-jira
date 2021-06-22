@@ -1,11 +1,10 @@
 import { SearchPanel } from './search-panel';
 import { List } from './list';
 import { useDebounce, useDocumentTitle } from 'utils';
-import styled from '@emotion/styled';
 import { useProjects } from 'utils/project';
 import { useUsers } from 'utils/user';
 import { useProjectModal, useProjectsSearchParams } from './util';
-import { ButtonNoPadding, ErrorBox, Row } from 'components/lib';
+import { ButtonNoPadding, ErrorBox, Row, ScreenContainer } from 'components/lib';
 
 export const ProjectListScreen = () => {
   useDocumentTitle('项目列表', false);
@@ -16,7 +15,7 @@ export const ProjectListScreen = () => {
   const { open } = useProjectModal();
 
   return (
-    <Container>
+    <ScreenContainer>
       <Row between={true}>
         <h1>项目列表</h1>
         <ButtonNoPadding onClick={open} type={'link'}>
@@ -26,13 +25,9 @@ export const ProjectListScreen = () => {
       <SearchPanel param={param} setParam={setParam} users={users || []}></SearchPanel>
       <ErrorBox error={error}></ErrorBox>
       <List loading={isLoading} dataSource={list || []} users={users || []}></List>
-    </Container>
+    </ScreenContainer>
   );
 };
 
 // 用来查看该组件内部什么地方造成了无限渲染等错误
 // ProjectListScreen.whyDidYouRender = true;
-
-const Container = styled.div`
-  padding: 3.2rem;
-`;
