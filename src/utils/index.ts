@@ -29,15 +29,24 @@ export const cleanObject = (object: { [key: string]: unknown }) => {
   return result;
 };
 
+/**
+ * useEffect 第二个参数为[]版本
+ * @param callback
+ */
 export const useMount = (callback: () => void) => {
   useEffect(() => {
     callback();
-    // TODO 依赖加上callback会造成无限循环 和useCallback 和 useMemo 有关系
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // 因为依赖加上了callback 所以每一个传入的callback都要使用useCallback包上 否则会造成无限循环
+  }, [callback]);
 };
 
-export const useDebounce = <T>(value: T, delay?: number): T => {
+/**
+ * 防抖
+ * @param value
+ * @param delay
+ * @returns
+ */
+export const useDebounce = <T>(value: T, delay: number = 200): T => {
   const [debounceValue, setDebounceValue] = useState(value);
 
   useEffect(() => {
@@ -50,6 +59,11 @@ export const useDebounce = <T>(value: T, delay?: number): T => {
   return debounceValue;
 };
 
+/**
+ * 对某个数组引出三个方法 包括清空 移除某项 和添加一项
+ * @param arr
+ * @returns
+ */
 export const useArray = <T>(arr: T[]) => {
   const [result, setResult] = useState(arr);
 
@@ -68,6 +82,11 @@ export const useArray = <T>(arr: T[]) => {
   return { value: result, clear, removeIndex, add };
 };
 
+/**
+ * 用来设置document.title
+ * @param title
+ * @param keepOnUnmount
+ */
 export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) => {
   // useRef能够保持值不变
   // useRef内部值改变的时候不会触发组件的重新渲染
@@ -86,6 +105,10 @@ export const useDocumentTitle = (title: string, keepOnUnmount: boolean = true) =
   }, [keepOnUnmount, oldTitle]);
 };
 
+/**
+ * 回到最初的页面
+ * @returns
+ */
 export const resetRoutes = () => (window.location.href = window.location.origin);
 
 /**
@@ -103,4 +126,36 @@ export const useMountedRef = () => {
   });
 
   return mountedRef;
+};
+
+/**
+ * 节流
+ * @param value
+ * @param delay
+ * @returns
+ */
+export const useThrottle = <T>(value: T, delay: number) => {
+  const [throttleValue, setThrottleValue] = useState<T>(value);
+  const [prevTime, setPrevTime] = useState(Date.now());
+
+  useEffect(() => {
+    const nowTime = Date.now();
+    let timer: NodeJS.Timeout;
+
+    // 假如够时间了就直接值 所以下次访问再清空定时器也无所谓
+    if (nowTime - prevTime > delay) {
+      setThrottleValue(value);
+      setPrevTime(Date.now());
+    } else {
+      // 不够时间就用 还缺少的时间设置定时器 如果再次访问就清空定时器
+      timer = setTimeout(() => {
+        setThrottleValue(value);
+        setPrevTime(Date.now());
+      }, delay - (nowTime - prevTime));
+    }
+
+    return () => clearTimeout(timer);
+  }, [value, prevTime, delay]);
+
+  return throttleValue;
 };
