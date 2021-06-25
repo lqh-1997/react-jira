@@ -11,6 +11,8 @@ import { Task } from 'types/task';
 import { Mark } from 'components/mark';
 import { useDeleteKanban } from 'utils/kanban';
 import { Row } from 'components/lib';
+import React from 'react';
+import { Drag, Drop, DropChild } from 'components/drap-and-drop';
 
 const TaskTypeIcon = ({ id }: { id: number }) => {
   const { data: taskTypes } = useTaskTypes();
@@ -30,24 +32,34 @@ const TaskCart = ({ task }: { task: Task }) => {
   );
 };
 
-export const KanbanColumn = ({ kanban }: { kanban: Kanban }) => {
+// 因为KanbanColumn作为Drag的child存在的 所以需要将ref和props传递
+export const KanbanColumn = React.forwardRef<HTMLDivElement, { kanban: Kanban }>(({ kanban, ...props }, ref) => {
   const { data: allTasks } = useTasks(useTasksSearchParams());
   const tasks = allTasks?.filter((task) => task.kanbanId === kanban.id);
   return (
-    <Container>
+    <Container ref={ref} {...props}>
+      <Row between={true}>
+        <h3>{kanban.name}</h3>
+        <More kanban={kanban} key={kanban.id}></More>
+      </Row>
       <TasksContainer>
-        <Row between={true}>
-          <h3>{kanban.name}</h3>
-          <More kanban={kanban}></More>
-        </Row>
-        {tasks?.map((task) => (
-          <TaskCart task={task} key={task.id}></TaskCart>
-        ))}
+        <Drop type={'ROW'} direction={'vertical'} droppableId={String(kanban.id)}>
+          {/* 给它一个高度 防止没有元素的时候无法drop到该容器中 */}
+          <DropChild style={{ minHeight: '1rem' }}>
+            {tasks?.map((task, index) => (
+              <Drag key={task.id} index={index} draggableId={'task' + task.id}>
+                <div>
+                  <TaskCart task={task} key={task.id}></TaskCart>
+                </div>
+              </Drag>
+            ))}
+          </DropChild>
+        </Drop>
         <CreateTask kanbanId={kanban.id}></CreateTask>
       </TasksContainer>
     </Container>
   );
-};
+});
 
 const More = ({ kanban }: { kanban: Kanban }) => {
   const { mutateAsync } = useDeleteKanban(useKanbansQueryKey());

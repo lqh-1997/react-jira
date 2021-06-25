@@ -1,4 +1,6 @@
 import { QueryKey, useQueryClient } from 'react-query';
+import { Task } from 'types/task';
+import { reorder } from './reorder';
 
 export const useConfig = (queryKey: QueryKey, callback: (target: any, old?: any[]) => any[]) => {
   const queryClient = useQueryClient();
@@ -29,3 +31,12 @@ export const useEditConfig = (queryKey: QueryKey) =>
 export const useAddConfig = (queryKey: QueryKey) =>
   // FIXME 在服务器还未返回成功之前,没有传入id 会导致增加的时候key报错(其实不建议这里使用乐观更新)
   useConfig(queryKey, (target, old) => (old ? [...old, target] : [target]));
+
+export const useReorderKanbanConfig = (queryKey: QueryKey) =>
+  useConfig(queryKey, (target, old) => reorder({ list: old, ...target }));
+
+export const useReorderTaskConfig = (queryKey: QueryKey) =>
+  useConfig(queryKey, (target, old) => {
+    const orderedList = reorder({ list: old, ...target }) as Task[];
+    return orderedList.map((item) => (item.id === target.fromId ? { ...item, kanbanId: target.toKanbanId } : item));
+  });
