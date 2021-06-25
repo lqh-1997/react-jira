@@ -10,6 +10,7 @@ import { Navigate, Route, Routes } from 'react-router';
 import { resetRoutes } from 'utils';
 import { ProjectModal } from 'screens/project-list/project-modal';
 import { ProjectPopover } from 'components/project-popover';
+import { UserPopover } from 'components/user-popover';
 
 // 一个状态要传入多层的子组件被称为 prop drilling
 
@@ -38,7 +39,7 @@ const PageHeader = () => {
           <SoftwareLogo width={'18rem'} color={'rgb(38,132,255)'}></SoftwareLogo>
         </ButtonNoPadding>
         <ProjectPopover></ProjectPopover>
-        <span>用户</span>
+        <UserPopover></UserPopover>
       </HeaderLeft>
       <HeaderRight>
         <User></User>
